@@ -23,3 +23,5 @@ echo '{"a":10, "k":"XXXXXXXX","d":"Hello, World!","t":"test"}' | nc -q 20 -u you
 This will submit the whole message to Hologram (which doesn't seem to mind the extra "a":10,
 get a "[0,0]" response, then delay 10 seconds, and finally send it via UDP.
 The `-q 20` causes nc to linger 20 seconds for the response.
+
+The `hologw` binary is a Linux x64 executable that will run on any Linux distro.
