@@ -2,13 +2,24 @@
 
 _UDP gateway for hologram cell service_
 
-The hologw will someday implement a simple gateway between UDP and the hologram IoT
-service. Right now all it does is listen on UDP port 9999, print the contents of
-incoming packets, and respond with a single packet containing `OK\n`.
+The hologw is a very simple gateway between UDP and the hologram IoT
+service in order to submit data to Hologram.
+The cellular device sends a UDP packet to port 9999 on which hologw runs,
+the hologw forwards that packet via TCP to Hologram, reads the response, and
+sends that back via UDP to the cellular device.
 
-A simple way to send it packets from a Linux device is to use something like:
+One added feature is that if the JSON message object contains a field
+named "a" that is an integer then the GW delays the UDP response by
+that many seconds. This provided to be able to test the UDP NAT timeout
+of the cellular carrier.
+
+There are no command-line options, so just run `./hologw` on an internet-accessible
+server. Assuming your cellular device is a unix box, send it a packet
+like so:
 ```
-echo '{"k":"=XXXXXXX","d":"Hello, World!","t":"test"}' | nc -q 10 -u your.host.or.ip 9999
+echo '{"a":10, "k":"XXXXXXXX","d":"Hello, World!","t":"test"}' | nc -q 20 -u your.host.or.ip 9999
 ```
 
-The `-q 10` causes nc to linger 10 seconds for the OK response.
+This will submit the whole message to Hologram (which doesn't seem to mind the extra "a":10,
+get a "[0,0]" response, then delay 10 seconds, and finally send it via UDP.
+The `-q 20` causes nc to linger 20 seconds for the response.
